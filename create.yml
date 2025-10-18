@@ -1,0 +1,14 @@
+# 'days' is the number of days you want to revise for
+# 'tests' is the number of papers you want to do per day
+days: 0
+tests: 0
+
+# Enter your subjects here. Enter the subject name, then the 'weight'
+# Weight is a number from 1-5 where 5 means that the subject shows up the most and 1 means it shows up the least.
+subjects:
+  Computer Science: 3
+  Maths: 3
+
+# DO NOT EDIT BEYOND THIS LINE!
+completed: 0
+table: {}
