@@ -48,6 +48,8 @@ def createFile(filepath):
             }
 
             file.write(rewriteFile(data_1,data_2,data_3))
+
+
 def constructSubjectList(subjectDict,total_tests):
     # calculate sum of weights
     totalweight = 0
@@ -71,17 +73,51 @@ def constructSubjectList(subjectDict,total_tests):
     shuffle(tests)
     return tests
 
-def formatSubjectList(test_list, tests_per_day):
+# internal function for the one below
+def formatSubjectListInner(test_list: list, tests_per_day: int, days: int, start_date: int):
     timetable = []
-    new_list = []
+    row1 = []
+    timetable = []
+    # create header (day numbers)
+    # maybe if I stop being lazy I'll add proper date formatting
+    for i in range(days):
+        row1.append(f"Day {i+start_date}")
+    # create the nested lists depending on how many tests there are
+    for i in range(tests_per_day):
+        timetable.append([])
+    # fill each row
     for i in range(len(test_list)):
-        new_list.append(test_list[i])
-        if len(new_list) == tests_per_day:
-            timetable.append(new_list)
-            new_list = []
-    timetable.append(new_list)
+        # calculate row to put things in
+        row = i % tests_per_day
+
+        # add subject
+        timetable[row].append(test_list[i])
+
+    # merge lists
+    timetable.insert(0,row1)
     return timetable
 
+# regular function that splits test list into groups of 5
+def formatSubjectList(test_list: list, tests_per_day: int, days: int, batch_size: int):
+    final_list = []
+    start_list = test_list
+    c = batch_size
+    d = 0
+    e = 0
+    while len(start_list) > c:
+        final_list.append(formatSubjectListInner(start_list[d:(batch_size + c)], tests_per_day, batch_size, e+1))
+        c += batch_size*tests_per_day
+        d += batch_size*tests_per_day
+        e += batch_size
+
+    # handle unfinished days
+    print(f"{c} {d} {e} {len(test_list)} {len(start_list)}")
+    remainder = (((len(start_list)-(c-batch_size))//batch_size)+1)
+    final_list.append(formatSubjectListInner(start_list[d:len(test_list)], tests_per_day, remainder, e+1))
+    return final_list
+
+
+# PDF creating function
 def createPdf(filepath, raw_data):
     document = SimpleDocTemplate(filepath,pagesize=A4)
     styles = getSampleStyleSheet()
@@ -98,10 +134,9 @@ def createPdf(filepath, raw_data):
         ("GRID", (0, 0), (-1, -1), 1, colors.black),
     ])
 
-    # auto format data for tables
-    newList = formatSubjectList(raw_data, 5)
-    for item in newList:
-        table = Table(item,colWidths=[50,50,50,50,50])
+    # create table (list containing every 2D list)
+    for item in raw_data:
+        table = Table(item,colWidths=[150,150,150,150,150])
         table.setStyle(css)
         content.append(table)
 
@@ -109,11 +144,11 @@ def createPdf(filepath, raw_data):
     document.build(content)
     print("Built successfully!")
 
-
-
 # test code
-subjects = constructSubjectList({"maths":2,"computer science":3},5)
-print(formatSubjectList(subjects,2))
+subjects = constructSubjectList({"maths":2,"computer science":3},50)
+# subjects = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]
+list = formatSubjectList(subjects,2,10,3)
+createPdf("dirt.pdf",list)
 
 # simple CLI to start
 if __name__ == "__main__":
