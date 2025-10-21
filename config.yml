@@ -1,14 +1,20 @@
 # 'days' is the number of days you want to revise for
 # 'tests' is the number of papers you want to do per day
-days: 10
-tests: 3
+days: 15
+tests: 2
+logo: "parabola.png"
 
 # Enter your subjects here. Enter the subject name, then the 'weight'
 # Weight is a number from 1-5 where 5 means that the subject shows up the most and 1 means it shows up the least.
 subjects:
+  Biology: 4
   Computer Science: 3
-  Maths: 3
+  Chemistry: 3
+  English Language: 6
+  Geography: 5
+  Mandarin: 5
+  Maths: 4
   Physics: 3
 
 # DO NOT EDIT BEYOND THIS LINE!
-DO NOT EDIT: 0
+version: 1
