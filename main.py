@@ -4,7 +4,7 @@ from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, Image
 from reportlab.lib.styles import getSampleStyleSheet
-from random import shuffle
+from random import shuffle, randint
 from time import time
 from datetime import datetime
 
@@ -20,6 +20,8 @@ def rewriteFile(header,subjects,table):
     string += "\n# DO NOT EDIT BEYOND THIS LINE!\n"
     string += str(data_3)
     return string
+
+
 def loadFile(filepath):
 
     if os.path.exists(filepath):
@@ -28,6 +30,7 @@ def loadFile(filepath):
             return config_dict
     else:
         return("That file doesn't exist!")
+
 
 def createFile(filepath):
     if os.path.exists(filepath):
@@ -51,6 +54,17 @@ def createFile(filepath):
 
             file.write(rewriteFile(data_1,data_2,data_3))
 
+def doSorting(list: list):
+    # sorts list randomly first and swaps things which are next to each other with random elements
+    old_list = list
+    shuffle(list)
+    for i in range(1,len(old_list)):
+        if old_list[i] == old_list[i-1]:
+            val = old_list[i]
+            old_list.pop(i)
+            old_list.insert(randint(0,len(old_list)-1),val)
+    return old_list
+
 
 def constructSubjectList(subjectDict,total_tests):
     # calculate sum of weights
@@ -72,7 +86,7 @@ def constructSubjectList(subjectDict,total_tests):
                 tests.append(j)
 
     # shuffle list of tests
-    shuffle(tests)
+    tests = doSorting(tests)
     return tests
 
 # internal function for the one below
